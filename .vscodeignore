@@ -1,0 +1,10 @@
+.vscode-test
+.vscode-test/**
+.vscode-test-data/**
+out/**
+node_modules/**
+src/**
+.gitignore
+.vscodeignore
+pnpm-lock.yaml
+

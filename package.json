@@ -75,5 +75,9 @@
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.4",
     "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "jscpd": "^4.0.5",
+    "ts-morph": "^27.0.0"
   }
 }

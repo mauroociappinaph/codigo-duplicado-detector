@@ -1,25 +1,40 @@
 import * as vscode from 'vscode';
 import { DetectionService } from './services/detectionService';
-import { ProblemsProvider } from './providers/problemsProvider'; // Importar el ProblemsProvider
+import { ProblemsProvider } from './providers/problemsProvider';
+import { Project } from 'ts-morph'; // Importar Project de ts-morph
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('🚀 "codigo-duplicado-detector" activado.');
 
   const detectionService = new DetectionService();
-  const problemsProvider = new ProblemsProvider(); // Crear instancia del ProblemsProvider
+  const problemsProvider = new ProblemsProvider();
 
   // Registrar el HoverProvider
   context.subscriptions.push(
     vscode.languages.registerHoverProvider(
-      { scheme: 'file', language: '*' }, // Registrar para todos los archivos
+      { scheme: 'file', language: '*' },
       problemsProvider
     )
   );
 
   const commands = [
+    vscode.commands.registerCommand('duplicate-code-detector.detect', () =>
+      handleDetection(detectionService, problemsProvider)
+    ),
+    // Registrar el nuevo comando de refactorización
     vscode.commands.registerCommand(
-      'duplicate-code-detector.detect',
-      () => handleDetection(detectionService, problemsProvider) // Pasar problemsProvider
+      'duplicate-code-detector.refactor',
+      async () => {
+        // Inicializar un proyecto de ts-morph
+        const _project = new Project({
+          tsConfigFilePath: vscode.workspace.rootPath
+            ? `${vscode.workspace.rootPath}/tsconfig.json`
+            : undefined,
+          // Removed addDtsFiles: false,
+        });
+        vscode.window.showInformationMessage('ts-morph Project inicializado.');
+        // Aquí iría la lógica de refactorización con ts-morph
+      }
     ),
   ];
 
@@ -28,7 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 async function handleDetection(
   detectionService: DetectionService,
-  problemsProvider: ProblemsProvider // Recibir problemsProvider
+  problemsProvider: ProblemsProvider
 ) {
   const workspaceFolders = vscode.workspace.workspaceFolders;
 
@@ -50,7 +65,7 @@ async function handleDetection(
       },
       async () => {
         const report = await detectionService.run(workspacePath);
-        problemsProvider.update(report); // Actualizar el ProblemsProvider con el reporte
+        problemsProvider.update(report);
       }
     );
 

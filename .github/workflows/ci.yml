@@ -17,12 +17,8 @@ jobs:
       with:
         node-version: 18.x
         cache: 'pnpm'
-    - name: Install pnpm
-      run: npm install -g pnpm
-    - name: Add pnpm to PATH
-      run: echo "$PNPM_HOME" >> $GITHUB_PATH
     - name: Install dependencies
-      run: pnpm install
+      run: pnpm install --no-frozen-lockfile
     - name: Run tests
       run: pnpm test
     - name: Run linter

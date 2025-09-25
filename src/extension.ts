@@ -1,21 +1,35 @@
 import * as vscode from 'vscode';
 import { DetectionService } from './services/detectionService';
+import { ProblemsProvider } from './providers/problemsProvider'; // Importar el ProblemsProvider
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('🚀 "codigo-duplicado-detector" activado.');
 
   const detectionService = new DetectionService();
+  const problemsProvider = new ProblemsProvider(); // Crear instancia del ProblemsProvider
+
+  // Registrar el HoverProvider
+  context.subscriptions.push(
+    vscode.languages.registerHoverProvider(
+      { scheme: 'file', language: '*' }, // Registrar para todos los archivos
+      problemsProvider
+    )
+  );
 
   const commands = [
-    vscode.commands.registerCommand('duplicate-code-detector.detect', () =>
-      handleDetection(detectionService)
+    vscode.commands.registerCommand(
+      'duplicate-code-detector.detect',
+      () => handleDetection(detectionService, problemsProvider) // Pasar problemsProvider
     ),
   ];
 
   context.subscriptions.push(...commands);
 }
 
-async function handleDetection(detectionService: DetectionService) {
+async function handleDetection(
+  detectionService: DetectionService,
+  problemsProvider: ProblemsProvider // Recibir problemsProvider
+) {
   const workspaceFolders = vscode.workspace.workspaceFolders;
 
   if (!workspaceFolders?.length) {
@@ -35,7 +49,8 @@ async function handleDetection(detectionService: DetectionService) {
         cancellable: false,
       },
       async () => {
-        await detectionService.run(workspacePath);
+        const report = await detectionService.run(workspacePath);
+        problemsProvider.update(report); // Actualizar el ProblemsProvider con el reporte
       }
     );
 

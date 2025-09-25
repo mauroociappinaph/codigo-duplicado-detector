@@ -46,6 +46,10 @@
       {
         "command": "duplicate-code-detector.detect",
         "title": "Detectar Código Duplicado"
+      },
+      {
+        "command": "duplicate-code-detector.refactor",
+        "title": "Refactorizar Código Duplicado"
       }
     ]
   },

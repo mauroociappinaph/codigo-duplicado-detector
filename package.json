@@ -11,7 +11,38 @@
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
-  "contributes": {},
+  "contributes": {
+    "configuration": {
+      "title": "Detector de Código Duplicado",
+      "properties": {
+        "codeDuplicateDetector.minLines": {
+          "type": "number",
+          "default": 5,
+          "description": "Número mínimo de líneas para que un bloque sea considerado duplicado. (Corresponde a 'minLines' de jscpd)."
+        },
+        "codeDuplicateDetector.minTokens": {
+          "type": "number",
+          "default": 50,
+          "description": "Número mínimo de tokens (palabras, símbolos) para que un bloque sea considerado duplicado. Es más preciso que las líneas. (Corresponde a 'minTokens' de jscpd)."
+        },
+        "codeDuplicateDetector.ignore": {
+          "type": "array",
+          "default": [
+            "**/node_modules/**",
+            "**/.git/**",
+            "**/dist/**",
+            "**/*.md"
+          ],
+          "description": "Lista de patrones 'glob' para ignorar archivos y carpetas en el análisis. (Corresponde a 'ignore' de jscpd)."
+        },
+        "codeDuplicateDetector.useGitignore": {
+          "type": "boolean",
+          "default": true,
+          "description": "Si es verdadero, utilizará las reglas del archivo .gitignore del proyecto para ignorar archivos. (Corresponde a 'gitignore' de jscpd)."
+        }
+      }
+    }
+  },
   "scripts": {
     "vscode:prepublish": "pnpm run compile",
     "compile": "tsc -p ./",

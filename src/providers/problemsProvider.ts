@@ -65,9 +65,9 @@ export class ProblemsProvider implements vscode.HoverProvider {
 
   // Implementación del HoverProvider
   public provideHover(
-    document: vscode.TextDocument,
+    _document: vscode.TextDocument, // Fix here
     position: vscode.Position,
-    _token: vscode.CancellationToken // Fix 3
+    _token: vscode.CancellationToken
   ): vscode.ProviderResult<vscode.Hover> {
     // Buscar si hay un diagnóstico en la posición actual
     const diagnostic = this.diagnostics.find((d) => d.range.contains(position));

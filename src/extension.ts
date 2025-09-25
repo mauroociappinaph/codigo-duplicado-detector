@@ -25,14 +25,35 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'duplicate-code-detector.refactor',
       async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+          vscode.window.showErrorMessage(
+            'No hay ningún editor de texto activo.'
+          );
+          return;
+        }
+
+        const document = editor.document;
+        if (document.uri.scheme !== 'file') {
+          vscode.window.showErrorMessage(
+            'Solo se pueden refactorizar archivos locales.'
+          );
+          return;
+        }
+
         // Inicializar un proyecto de ts-morph
-        const _project = new Project({
+        const project = new Project({
           tsConfigFilePath: vscode.workspace.rootPath
             ? `${vscode.workspace.rootPath}/tsconfig.json`
             : undefined,
-          // Removed addDtsFiles: false,
         });
-        vscode.window.showInformationMessage('ts-morph Project inicializado.');
+
+        // Añadir el archivo activo al proyecto de ts-morph
+        const sourceFile = project.addSourceFileAtPath(document.fileName);
+
+        vscode.window.showInformationMessage(
+          `ts-morph Project inicializado. Analizando: ${sourceFile.getBaseName()}`
+        );
         // Aquí iría la lógica de refactorización con ts-morph
       }
     ),

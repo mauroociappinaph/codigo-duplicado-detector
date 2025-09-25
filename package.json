@@ -20,7 +20,7 @@
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "prepare": "husky",
-    "test": "vscode-test"
+    "test": "jest"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,json,md}": [
@@ -30,7 +30,6 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
     "@types/vscode": "^1.83.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",

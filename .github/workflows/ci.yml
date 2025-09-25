@@ -12,17 +12,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 8 # Specify pnpm version
     - name: Use Node.js 18.x
       uses: actions/setup-node@v4
       with:
         node-version: 18.x
         cache: 'pnpm'
-    - name: Get npm global bin path and add to PATH
-      run: echo "$(npm config get prefix)/bin" >> $GITHUB_PATH
-    - name: Install pnpm
-      run: npm install -g pnpm
     - name: Install dependencies
-      run: pnpm install --no-frozen-lockfile
+      run: pnpm install
     - name: Run tests
       run: pnpm test
     - name: Run linter

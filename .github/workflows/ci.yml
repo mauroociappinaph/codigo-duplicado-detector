@@ -17,8 +17,10 @@ jobs:
       with:
         node-version: 18.x
         cache: 'pnpm'
-    - name: Enable pnpm with Corepack
-      run: corepack enable pnpm
+    - name: Get npm global bin path and add to PATH
+      run: echo "$(npm config get prefix)/bin" >> $GITHUB_PATH
+    - name: Install pnpm
+      run: npm install -g pnpm
     - name: Install dependencies
       run: pnpm install --no-frozen-lockfile
     - name: Run tests

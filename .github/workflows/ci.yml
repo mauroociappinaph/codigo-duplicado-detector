@@ -17,6 +17,8 @@ jobs:
       with:
         node-version: 18.x
         cache: 'pnpm'
+    - name: Enable pnpm with Corepack
+      run: corepack enable pnpm
     - name: Install dependencies
       run: pnpm install --no-frozen-lockfile
     - name: Run tests

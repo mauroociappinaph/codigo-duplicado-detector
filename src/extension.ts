@@ -1,33 +1,54 @@
 import * as vscode from 'vscode';
-import { DetectionService } from './services/detectionService'; // Importar el servicio
+import { DetectionService } from './services/detectionService';
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log(
-    'Congratulations, your extension "codigo-duplicado-detector" is now active!'
-  );
+  console.log('🚀 "codigo-duplicado-detector" activado.');
 
-  // Crear una instancia del servicio
   const detectionService = new DetectionService();
 
-  // Registrar el nuevo comando
-  const disposable = vscode.commands.registerCommand(
-    'duplicate-code-detector.detect', // Usar el ID de nuestro comando
-    () => {
-      // Obtener el path del workspace actual
-      const workspaceFolders = vscode.workspace.workspaceFolders;
-      if (workspaceFolders && workspaceFolders.length > 0) {
-        const workspacePath = workspaceFolders[0].uri.fsPath;
-        // Llamar al método run del servicio
-        detectionService.run(workspacePath);
-      } else {
-        vscode.window.showErrorMessage(
-          'Por favor, abre un proyecto o workspace.'
-        );
-      }
-    }
-  );
+  const commands = [
+    vscode.commands.registerCommand('duplicate-code-detector.detect', () =>
+      handleDetection(detectionService)
+    ),
+  ];
 
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(...commands);
 }
 
-export function deactivate() {}
+async function handleDetection(detectionService: DetectionService) {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+
+  if (!workspaceFolders?.length) {
+    vscode.window.showErrorMessage(
+      '⚠️ Abre un proyecto o workspace para analizar.'
+    );
+    return;
+  }
+
+  const workspacePath = workspaceFolders[0].uri.fsPath;
+
+  try {
+    await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: 'Detectando código duplicado...',
+        cancellable: false,
+      },
+      async () => {
+        await detectionService.run(workspacePath);
+      }
+    );
+
+    vscode.window.showInformationMessage('✅ Análisis completado con éxito.');
+  } catch (err: unknown) {
+    let message = 'Ocurrió un error desconocido';
+    if (err instanceof Error) {
+      message = err.message;
+    }
+    vscode.window.showErrorMessage(`❌ Error en la detección: ${message}`);
+  }
+}
+
+export function deactivate() {
+  console.log('🛑 "codigo-duplicado-detector" desactivado.');
+}

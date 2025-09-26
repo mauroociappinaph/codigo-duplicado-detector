@@ -2,6 +2,10 @@
   "name": "codigo-duplicado-detector",
   "displayName": "Codigo Duplicado Detector",
   "description": "Una extensión para detectar código duplicado.",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.83.0"

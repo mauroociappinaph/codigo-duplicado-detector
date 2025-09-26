@@ -59,8 +59,8 @@
   },
   "scripts": {
     "vscode:prepublish": "pnpm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "compile": "webpack --mode production",
+    "watch": "webpack --watch",
     "pretest": "pnpm run compile && pnpm run lint",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",

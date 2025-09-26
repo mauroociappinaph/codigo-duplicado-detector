@@ -23,6 +23,19 @@ export class DetectionService {
     vscode.window.showInformationMessage(
       'Ejecutando detección de duplicados...'
     );
+
+    // Leer la configuración de la extensión
+    const config = vscode.workspace.getConfiguration('codeDuplicateDetector');
+    const minLines = config.get<number>('minLines');
+    const ignorePatterns = config.get<string[]>('ignore');
+    const useGitignore = config.get<boolean>('useGitignore');
+
+    console.log('Configuración leída:');
+    console.log(`  minLines: ${minLines}`);
+    console.log(`  ignore: ${ignorePatterns}`);
+    console.log(`  useGitignore: ${useGitignore}`);
+
+    // Aquí se pasaría la configuración a jscpd
     return {}; // Retorno temporal
   }
 }

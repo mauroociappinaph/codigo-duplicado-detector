@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { DetectionService } from './services/detectionService';
 import { ProblemsProvider } from './providers/problemsProvider';
 import { Project } from 'ts-morph'; // Importar Project de ts-morph
+import { RefactorService } from './services/refactorService'; // Importar RefactorService
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('🚀 "codigo-duplicado-detector" activado.');
@@ -25,14 +26,46 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'duplicate-code-detector.refactor',
       async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+          vscode.window.showErrorMessage(
+            'No hay ningún editor de texto activo.'
+          );
+          return;
+        }
+
+        const document = editor.document;
+        if (document.uri.scheme !== 'file') {
+          vscode.window.showErrorMessage(
+            'Solo se pueden refactorizar archivos locales.'
+          );
+          return;
+        }
+
         // Inicializar un proyecto de ts-morph
-        const _project = new Project({
+        const project = new Project({
           tsConfigFilePath: vscode.workspace.rootPath
             ? `${vscode.workspace.rootPath}/tsconfig.json`
             : undefined,
-          // Removed addDtsFiles: false,
         });
-        vscode.window.showInformationMessage('ts-morph Project inicializado.');
+
+        // Añadir el archivo activo al proyecto de ts-morph
+        const sourceFile = project.addSourceFileAtPath(document.fileName);
+
+        // Crear una instancia de RefactorService
+        const refactorService = new RefactorService(project);
+
+        // Placeholder para llamar a un método de refactorService
+        refactorService.extractFunction(
+          sourceFile,
+          1,
+          5,
+          'newExtractedFunction'
+        ); // Ejemplo de llamada
+
+        vscode.window.showInformationMessage(
+          `ts-morph Project inicializado. Analizando: ${sourceFile.getBaseName()}. RefactorService llamado.`
+        );
         // Aquí iría la lógica de refactorización con ts-morph
       }
     ),

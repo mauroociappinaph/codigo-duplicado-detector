@@ -2,6 +2,10 @@
   "name": "codigo-duplicado-detector",
   "displayName": "Codigo Duplicado Detector",
   "description": "Una extensión para detectar código duplicado.",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.83.0"
@@ -11,11 +15,53 @@
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
-  "contributes": {},
+  "contributes": {
+    "configuration": {
+      "title": "Detector de Código Duplicado",
+      "properties": {
+        "codeDuplicateDetector.minLines": {
+          "type": "number",
+          "default": 5,
+          "description": "Número mínimo de líneas para que un bloque sea considerado duplicado. (Corresponde a 'minLines' de jscpd)."
+        },
+        "codeDuplicateDetector.minTokens": {
+          "type": "number",
+          "default": 50,
+          "description": "Número mínimo de tokens (palabras, símbolos) para que un bloque sea considerado duplicado. Es más preciso que las líneas. (Corresponde a 'minTokens' de jscpd)."
+        },
+        "codeDuplicateDetector.ignore": {
+          "type": "array",
+          "default": [
+            "**/node_modules/**",
+            "**/.git/**",
+            "**/dist/**",
+            "**/*.md"
+          ],
+          "description": "Lista de patrones 'glob' para ignorar archivos y carpetas en el análisis. (Corresponde a 'ignore' de jscpd)."
+        },
+        "codeDuplicateDetector.useGitignore": {
+          "type": "boolean",
+          "default": true,
+          "description": "Si es verdadero, utilizará las reglas del archivo .gitignore del proyecto para ignorar archivos. (Corresponde a 'gitignore' de jscpd)."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "duplicate-code-detector.detect",
+        "title": "Detectar Código Duplicado"
+      },
+      {
+        "command": "duplicate-code-detector.refactor",
+        "title": "Refactorizar Código Duplicado"
+      }
+    ]
+  },
   "scripts": {
     "vscode:prepublish": "pnpm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "compile": "pnpm run compile:worker && webpack --mode production",
+    "compile:worker": "webpack --config ./webpack.worker.config.js --mode production",
+    "watch": "webpack --watch",
     "pretest": "pnpm run compile && pnpm run lint",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
@@ -42,7 +88,17 @@
     "jest": "^30.1.3",
     "lint-staged": "^16.2.0",
     "prettier": "^3.6.2",
+    "threads-plugin": "^1.4.0",
     "ts-jest": "^29.4.4",
-    "typescript": "^5.5.3"
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.5.3",
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "@jscpd/core": "^4.0.1",
+    "jscpd": "^4.0.5",
+    "threads": "^1.7.0",
+    "ts-morph": "^27.0.0"
   }
 }

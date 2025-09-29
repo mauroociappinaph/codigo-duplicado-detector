@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-// Importar jscpd y worker_threads si es necesario
+import { spawn, Thread, Worker } from 'threads';
+import { IClone, IOptions } from '@jscpd/core';
 
 /**
  * Servicio para manejar la detección de código duplicado.
@@ -15,27 +16,42 @@ export class DetectionService {
 
   /**
    * Ejecuta el análisis de código duplicado en el workspace.
-   * @param _workspacePath La ruta del workspace a analizar.
+   * @param workspacePath La ruta del workspace a analizar.
    * @returns Una promesa que resuelve con el reporte de duplicados.
    */
-  public async run(_workspacePath: string): Promise<unknown> {
-    // Lógica para ejecutar jscpd
+  public async run(workspacePath: string): Promise<IClone[]> {
     vscode.window.showInformationMessage(
       'Ejecutando detección de duplicados...'
     );
 
-    // Leer la configuración de la extensión
     const config = vscode.workspace.getConfiguration('codeDuplicateDetector');
-    const minLines = config.get<number>('minLines');
-    const ignorePatterns = config.get<string[]>('ignore');
-    const useGitignore = config.get<boolean>('useGitignore');
+    const minLines = config.get<number>('minLines', 5);
+    const minTokens = config.get<number>('minTokens', 50);
+    const ignore = config.get<string[]>('ignore', []);
 
-    console.log('Configuración leída:');
-    console.log(`  minLines: ${minLines}`);
-    console.log(`  ignore: ${ignorePatterns}`);
-    console.log(`  useGitignore: ${useGitignore}`);
+    const options: IOptions = {
+      path: [workspacePath],
+      minLines,
+      minTokens,
+      ignore,
+      // Otras opciones que quieras pasar
+    };
 
-    // Aquí se pasaría la configuración a jscpd
-    return {}; // Retorno temporal
+    const worker = await spawn(new Worker('./detection.worker.js'));
+
+    try {
+      const clones = await worker.detect(options);
+      vscode.window.showInformationMessage(
+        `Detección de duplicados finalizada. Se encontraron ${clones.length} clones.`
+      );
+      return clones;
+    } catch (error) {
+      vscode.window.showErrorMessage(
+        `Error en la detección de duplicados: ${error}`
+      );
+      return [];
+    } finally {
+      await Thread.terminate(worker);
+    }
   }
 }

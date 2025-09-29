@@ -3,7 +3,11 @@
 'use strict';
 
 import path from 'path';
+import { fileURLToPath } from 'url';
 import ThreadsPlugin from 'threads-plugin';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**@type {import('webpack').Configuration}*/
 const config = {
@@ -44,4 +48,4 @@ const config = {
     level: 'log', //enables logging required for problem matchers
   },
 };
-module.exports = [config];
+export default [config];

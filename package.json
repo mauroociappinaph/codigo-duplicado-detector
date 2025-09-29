@@ -96,6 +96,7 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
+    "@jscpd/core": "^4.0.1",
     "jscpd": "^4.0.5",
     "threads": "^1.7.0",
     "ts-morph": "^27.0.0"

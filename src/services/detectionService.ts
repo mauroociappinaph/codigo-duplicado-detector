@@ -37,7 +37,7 @@ export class DetectionService {
       // Otras opciones que quieras pasar
     };
 
-    const worker = await spawn(new Worker('./detection.worker'));
+    const worker = await spawn(new Worker('./detection.worker.js'));
 
     try {
       const clones = await worker.detect(options);
